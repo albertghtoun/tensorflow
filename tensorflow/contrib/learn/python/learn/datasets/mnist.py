@@ -218,3 +218,60 @@ def read_data_sets(train_dir,
 
 def load_mnist():
   return read_data_sets('MNIST_data')
+
+#aff_mnist data reader
+
+def read_ext_data_sets(train_dir,
+                   fake_data=False,
+                   one_hot=False,
+                   dtype=dtypes.float32,
+		   shape=True):
+  if fake_data:
+
+    def fake():
+      return DataSet([], [], fake_data=True, one_hot=one_hot, dtype=dtype)
+
+    train = fake()
+    validation = fake()
+    test = fake()
+    return base.Datasets(train=train, validation=validation, test=test)
+
+  VALIDATION_SIZE = 5000
+
+#  local_file = base.maybe_download(TRAIN_IMAGES, train_dir,
+#                                   SOURCE_URL + TRAIN_IMAGES)
+  local_file = '/home/skynet0/data/train_images_ubyte.gz'
+  train_images = extract_images(local_file)
+
+#  local_file = base.maybe_download(TRAIN_LABELS, train_dir,
+#                                   SOURCE_URL + TRAIN_LABELS)
+  local_file = '/home/skynet0/data/train_labels_ubyte.gz'
+  train_labels = extract_labels(local_file, one_hot=one_hot)
+
+#  local_file = base.maybe_download(TEST_IMAGES, train_dir,
+#                                   SOURCE_URL + TEST_IMAGES)
+  local_file = '/home/skynet0/data/test_images_ubyte.gz'
+  test_images = extract_images(local_file)
+
+#  local_file = base.maybe_download(TEST_LABELS, train_dir,
+#                                   SOURCE_URL + TEST_LABELS)
+  local_file = '/home/skynet0/data/test_labels_ubyte.gz'
+  test_labels = extract_labels(local_file, one_hot=one_hot)
+
+  validation_images = train_images[:VALIDATION_SIZE]
+  validation_labels = train_labels[:VALIDATION_SIZE]
+  train_images = train_images[VALIDATION_SIZE:]
+  train_labels = train_labels[VALIDATION_SIZE:]
+
+  train = DataSet(train_images, train_labels, dtype=dtype, reshape=reshape)
+  validation = DataSet(validation_images, 
+		       validation_labels, 
+		       dtype=dtype,
+		       reshape=reshape)
+  test = DataSet(test_images, test_labels, dtype=dtype, reshape=reshape)
+
+  return base.Datasets(train=train, validation=validation, test=test)
+
+def load_ext_mnist():
+  return read_ext_data_sets('aff_MNIST_data')
+
