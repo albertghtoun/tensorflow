@@ -225,7 +225,7 @@ def read_ext_data_sets(train_dir,
                    fake_data=False,
                    one_hot=False,
                    dtype=dtypes.float32,
-		   shape=True):
+		   reshape=True):
   if fake_data:
 
     def fake():
